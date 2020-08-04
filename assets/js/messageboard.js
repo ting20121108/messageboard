@@ -17,28 +17,43 @@ $(document).ready(function () {
 				$("<div/>", {
 					id: message['id'],
 					class: "card",
-					style:　"width: 18rem;",
+					style: "width: 20rem; margin: 2%;",
 				}).append(
 					$("<div/>", {
 						class: "card-body",
 					}).append(
-						$("<span/>").text("暱稱："),
-						$("<span/>", {
-							class: 'name',
-						}).text(message['name']),
-						$("<span/>", {
-							class: "card-text",
-						}).text("  "),
-						$("<small/>", {
-							class: "text-muted",
-						}).text(message['time']),
-						$("<p/>").append(
+						$("<div/>", {
+							class: "row justify-content-between",
+							id: message['id'],
+						}).append(
+							$("<div/>", {
+								class: "col",
+							}).append(
+								$("<span/>").text("暱稱："),
+								$("<span/>", {
+									class: 'name',
+								}).text(message['name']),
+							),
+							$("<div/>", {
+								class: "col"
+							}).append(
+								$("<span/>", {
+									class: "card-text",
+								}).text("  "),
+								$("<small/>", {
+									class: "text-muted",
+								}).text(message['time']),
+							),
+						),
+						$("<div/>").append(
 							$("<span/>").text("內容："),
 							$("<span/>", {
 								class: 'content',
 							}).text(message['content']),
 						),
-						$("<p>").append(
+						$("<div>", {
+							class: 'row justify-content-around',
+						}).append(
 							$("<button/>", {
 								type: 'button',
 								'data-id': message['id'],
@@ -68,35 +83,54 @@ $(document).on('click', '#insert', function () {
 			'content': content,
 		},
 		success: function (response) {
-			alert(response['message']);
+			Swal.fire({
+				icon: 'success',
+				title: response['message'],
+			});
+
 			$('.modal').hide();
+
 			$.each(response['data'], function (key, message) {
 				$("#show").prepend(
 					$("<div/>", {
 						id: message['id'],
 						class: "card",
-						style: "width: 18rem;",
+						style: "width: 20rem; margin: 2%;",
 					}).append(
 						$("<div/>", {
 							class: "card-body",
 						}).append(
-							$("<span/>").text("暱稱："),
-							$("<span/>", {
-								class: 'name',
-							}).text(message['name']),
-							$("<span/>", {
-								class: "card-text",
-							}).text("  "),
-							$("<small/>", {
-								class: "text-muted",
-							}).text(message['time']),
+							$("<div/>", {
+								class: "row justify-content-between",
+							}).append(
+								$("<div/>", {
+									class: "col"
+								}).append(
+									$("<span/>").text("暱稱："),
+									$("<span/>", {
+										class: 'name',
+									}).text(message['name']),
+								),
+								$("<div/>", {
+									class: "col"
+								}).append(
+									$("<span/>", {
+										class: "card-text",
+									}).text("  "),
+									$("<small/>", {
+										class: "text-muted",
+									}).text(message['time']),
+								),
+							),
 							$("<p/>").append(
 								$("<span/>").text("內容："),
 								$("<span/>", {
 									class: 'content',
 								}).text(message['content']),
 							),
-							$("<p>").append(
+							$("<div>", {
+								class: 'row justify-content-around',
+							}).append(
 								$("<button/>", {
 									type: 'button',
 									'data-id': message['id'],
@@ -112,53 +146,45 @@ $(document).on('click', '#insert', function () {
 					),
 				);
 			});
-			$('.createForm').empty().append(
-				$("<div/>").append(
-					$("<span>").text("暱稱："),
-					$("<input>", {
-						type: 'text',
-						size: 25,
-						id: 'name',
-						required: true,
-					}),
-				),
-				$("<div/>").append(
-					$("<span>").text("內容："),
-					$("<textarea>", {
-						rows: '10',
-						cols: '20',
-						wrap: 'soft',
-						required: true,
-					}),
-				),
-				$("<button/>", {
-					type: 'button',
-					id: 'insert',
-					class: 'btn btn-primary',
-				}).text("送出"),
-			);
+			emptyCreateForm();
 		}
 	});
 });
 
 $(document).on('click', '.delete', function () {
 	let id = $(this).attr('data-id');
-	$.ajax({
-		url: '../api/Api/delete',
-		type: 'POST',
-		data: {
-			'id': id,
-		},
-		success: function (response) {
-			alert(response['message']);
-			$("#" + id).remove();
+	Swal.fire({
+		title: '確定要刪除?',
+		text: "刪除後資料無法復原!",
+		icon: 'warning',
+		showCancelButton: true,
+		confirmButtonColor: '#3085d6',
+		cancelButtonColor: '#d33',
+		confirmButtonText: '確定',
+		cancelButtonText: '取消',
+	}).then((result) => {
+		if (result.value) {
+			$.ajax({
+				url: '../api/Api/delete',
+				type: 'POST',
+				data: {
+					'id': id,
+				},
+				success: function (response) {
+					Swal.fire({
+						icon: 'success',
+						title: response['message'],
+					});
+					$("#" + id).remove();
+				}
+			});
 		}
-	});
+	})
 });
 
 $(document).on('click', '.edit', function () {
 	var id = $(this).attr('data-id');
-	var msg = $(this).closest('div'),
+	var msg = $(this).closest('#' + id),
 		name = msg.find('.name').text(),
 		content = msg.find('.content').text();
 	$("#" + id).html(
@@ -182,16 +208,20 @@ $(document).on('click', '.edit', function () {
 					id: 'newContent',
 				}).text(content),
 			),
-			$("<button/>", {
-				type: 'button',
-				'data-id': id,
-				class: 'update btn btn-success',
-			}).text("修改"),
-			$("<button/>", {
-				type: 'button',
-				'data-id': id,
-				class: 'cancel btn btn-secondary',
-			}).text("取消"),
+			$("<div>", {
+				class: 'row justify-content-around',
+			}).append(
+				$("<button/>", {
+					type: 'button',
+					'data-id': id,
+					class: 'update btn btn-success',
+				}).text("修改"),
+				$("<button/>", {
+					type: 'button',
+					'data-id': id,
+					class: 'cancel btn btn-secondary',
+				}).text("取消"),
+			),
 		),
 	);
 });
@@ -209,26 +239,48 @@ $(document).on('click', '.update', function () {
 			'content': content,
 		},
 		success: function (response) {
-			alert(response['message']);
+			Swal.fire({
+				icon: 'success',
+				title: response['message'],
+			});
+
 			$.each(response['data'], function (key, message) {
 				$("#" + message['id']).empty();
 				$("#" + message['id']).append(
 					$("<div/>", {
 						class: "card-body",
 					}).append(
-						$("<span/>").text("暱稱："),
-						$("<span/>", {
-							class: 'name',
-						}).text(message['name']),
-						$("<span/>").text(" 留言時間："),
-						$("<span/>").text(message['time']),
+						$("<div/>", {
+							class: "row justify-content-between",
+						}).append(
+							$("<div/>", {
+								class: "col"
+							}).append(
+								$("<span/>").text("暱稱："),
+								$("<span/>", {
+									class: 'name',
+								}).text(message['name']),
+							),
+							$("<div/>", {
+								class: "col"
+							}).append(
+								$("<span/>", {
+									class: "card-text",
+								}).text("  "),
+								$("<small/>", {
+									class: "text-muted",
+								}).text(message['time']),
+							),
+						),
 						$("<p/>").append(
 							$("<span/>").text("內容："),
 							$("<span/>", {
 								class: 'content',
 							}).text(message['content']),
 						),
-						$("<p>").append(
+						$("<div>", {
+							class: 'row justify-content-around',
+						}).append(
 							$("<button/>", {
 								type: 'button',
 								'data-id': message['id'],
@@ -263,19 +315,37 @@ $(document).on('click', '.cancel', function () {
 					$("<div/>", {
 						class: "card-body",
 					}).append(
-						$("<span/>").text("暱稱："),
-						$("<span/>", {
-							class: 'name',
-						}).text(message['name']),
-						$("<span/>").text(" 留言時間："),
-						$("<span/>").text(message['time']),
+						$("<div/>", {
+							class: "row justify-content-between",
+						}).append(
+							$("<div/>", {
+								class: "col"
+							}).append(
+								$("<span/>").text("暱稱："),
+								$("<span/>", {
+									class: 'name',
+								}).text(message['name']),
+							),
+							$("<div/>", {
+								class: "col"
+							}).append(
+								$("<span/>", {
+									class: "card-text",
+								}).text("  "),
+								$("<small/>", {
+									class: "text-muted",
+								}).text(message['time']),
+							),
+						),
 						$("<p/>").append(
 							$("<span/>").text("內容："),
 							$("<span/>", {
 								class: 'content',
 							}).text(message['content']),
 						),
-						$("<p>").append(
+						$("<div>", {
+							class: 'row justify-content-around',
+						}).append(
 							$("<button/>", {
 								type: 'button',
 								'data-id': message['id'],
@@ -293,3 +363,41 @@ $(document).on('click', '.cancel', function () {
 		}
 	});
 });
+
+function emptyCreateForm() {
+	$('.createForm').empty().append(
+		$("<div/>").append(
+			$("<span>").text("暱稱："),
+			$("<input>", {
+				type: 'text',
+				size: 25,
+				id: 'name',
+				required: true,
+			}),
+		),
+		$("<div/>").append(
+			$("<span>").text("內容："),
+			$("<textarea>", {
+				rows: '10',
+				cols: '20',
+				wrap: 'soft',
+				required: true,
+			}),
+		),
+		$("<div/>", {
+			class: 'modal-footer',
+		}).append(
+			$("<button>", {
+				type: 'button',
+				class: 'btn btn-primary',
+				'data-dismis': "modal",
+				id: "insert"
+			}).text("送出"),
+			$("<button>", {
+				type: 'button',
+				class: 'btn btn-secondary',
+				'data-dismis': "modal",
+			}).text("取消"),
+		),
+	);
+}
