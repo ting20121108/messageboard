@@ -70,11 +70,100 @@ $(document).ready(function () {
 			);
 		});
 	});
+
+	$('#insert').on('click', function () {
+		getCreateMessage();
+	});
 });
 
-$(document).on('click', '#insert', function () {
+// $(document).on('click', '#insert', function () {
+// 	let name = $('#name').val();
+// 	let content = $('#content').val();
+// 	$.ajax({
+// 		url: '../api/Api/create',
+// 		type: 'POST',
+// 		data: {
+// 			'name': name,
+// 			'content': content,
+// 		},
+// 		success: function (response) {
+// 			Swal.fire({
+// 				icon: 'success',
+// 				title: response['message'],
+// 			});
+
+// 			$('.modal').hide();
+
+// 			$.each(response['data'], function (key, message) {
+// 				$("#show").prepend(
+// 					$("<div/>", {
+// 						id: message['id'],
+// 						class: "card",
+// 						style: "width: 20rem; margin: 2%;",
+// 					}).append(
+// 						$("<div/>", {
+// 							class: "card-body",
+// 						}).append(
+// 							$("<div/>", {
+// 								class: "row justify-content-between",
+// 							}).append(
+// 								$("<div/>", {
+// 									class: "col"
+// 								}).append(
+// 									$("<span/>").text("暱稱："),
+// 									$("<span/>", {
+// 										class: 'name',
+// 									}).text(message['name']),
+// 								),
+// 								$("<div/>", {
+// 									class: "col"
+// 								}).append(
+// 									$("<span/>", {
+// 										class: "card-text",
+// 									}).text("  "),
+// 									$("<small/>", {
+// 										class: "text-muted",
+// 									}).text(message['time']),
+// 								),
+// 							),
+// 							$("<p/>").append(
+// 								$("<span/>").text("內容："),
+// 								$("<span/>", {
+// 									class: 'content',
+// 								}).text(message['content']),
+// 							),
+// 							$("<div>", {
+// 								class: 'row justify-content-around',
+// 							}).append(
+// 								$("<button/>", {
+// 									type: 'button',
+// 									'data-id': message['id'],
+// 									class: 'delete btn btn-danger',
+// 								}).text("刪除"),
+// 								$("<button/>", {
+// 									type: 'button',
+// 									'data-id': message['id'],
+// 									class: 'edit btn btn-success',
+// 								}).text("編輯"),
+// 							),
+// 						),
+// 					),
+// 				);
+// 			});
+// 			emptyCreateForm();
+// 		}
+// 	});
+// });
+
+function getCreateMessage() {
 	let name = $('#name').val();
 	let content = $('#content').val();
+	if (name != '' && content != '') {
+		submitCreateMessage(name, content);
+	}
+}
+
+function submitCreateMessage(name, content) {
 	$.ajax({
 		url: '../api/Api/create',
 		type: 'POST',
@@ -149,7 +238,7 @@ $(document).on('click', '#insert', function () {
 			emptyCreateForm();
 		}
 	});
-});
+}
 
 $(document).on('click', '.delete', function () {
 	let id = $(this).attr('data-id');
