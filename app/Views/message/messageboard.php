@@ -50,7 +50,7 @@
 		function getMessages() {
 			return new Promise((resolve) => {
 				$.ajax({
-					url: '../Api/getMessage',
+					url: '<?php echo base_url('Api/getMessage'); ?>',
 					method: 'POST',
 					success: (response) => {
 						resolve(response);
@@ -137,7 +137,7 @@
 
 	function submitCreateMessage(name, content) {
 		$.ajax({
-			url: '../Api/create',
+			url: '<?php echo base_url('Api/create'); ?>',
 			type: 'POST',
 			data: {
 				'name': name,
@@ -221,7 +221,7 @@
 		}).then((result) => {
 			if (result.value) {
 				$.ajax({
-					url: '../Api/delete',
+					url: '<?php echo base_url('Api/delete'); ?>',
 					type: 'POST',
 					data: {
 						'id': id,
@@ -287,7 +287,7 @@
 		let name = $('#newName').val();
 		let content = $('#newContent').val();
 		$.ajax({
-			url: '../Api/update',
+			url: '<?php echo base_url('Api/update'); ?>',
 			type: 'POST',
 			data: {
 				'id': id,
@@ -357,7 +357,7 @@
 		let id = $(this).attr('data-id');
 
 		$.ajax({
-			url: '../Api/getOne',
+			url: '<?php echo base_url('Api/getOne'); ?>',
 			type: 'POST',
 			data: {
 				'id': id,
