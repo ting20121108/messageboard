@@ -13,7 +13,6 @@
 	</div>
 
 	<div id="show" class="row"></div>
-
 	<!-- Modal -->
 	<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
 		<div class="modal-dialog" role="document">
@@ -28,11 +27,11 @@
 					<table>
 						<tr>
 							<td>暱稱：</td>
-							<td><input type="text" size="25" id="name" required></td>
+							<td><input type="text" size="25" id="name"></td>
 						</tr>
 						<tr>
 							<td>內容：</td>
-							<td><textarea rows="10" id="content" wrap="soft" required></textarea></td>
+							<td><textarea rows="10" id="content" wrap="soft"></textarea></td>
 						</tr>
 					</table>
 					<div class="modal-footer">
@@ -131,7 +130,13 @@
 		if (name != '' && content != '') {
 			submitCreateMessage(name, content);
 		} else {
-			alert("暱稱或內容不可空白!");
+			Swal.fire({
+				title: '警告',
+				text: "暱稱或內容不可空白",
+				icon: 'warning',
+				confirmButtonColor: 'red',
+				confirmButtonText: '確定',
+			})
 		}
 	}
 
@@ -203,7 +208,7 @@
 					),
 				);
 				emptyCreateForm();
-			}
+			},
 		});
 	}
 
@@ -286,6 +291,10 @@
 		let id = $(this).attr('data-id');
 		let name = $('#newName').val();
 		let content = $('#newContent').val();
+		submitUpdateMessage(id, name, content);
+	});
+
+	function submitUpdateMessage(id, name, content) {
 		$.ajax({
 			url: '<?php echo base_url('Api/update'); ?>',
 			type: 'POST',
@@ -295,63 +304,70 @@
 				'content': content,
 			},
 			success: function(response) {
-				Swal.fire({
-					icon: 'success',
-					title: response['message'],
-				});
+				if (response['status'] === "success") {
+					Swal.fire({
+						icon: 'success',
+						title: response['message'],
+					});
 
-				$("#" + response['data']['id']).empty();
-				$("#" + response['data']['id']).append(
-					$("<div/>", {
-						class: "card-body",
-					}).append(
+					$("#" + response['data']['id']).empty();
+					$("#" + response['data']['id']).append(
 						$("<div/>", {
-							class: "row justify-content-between",
+							class: "card-body",
 						}).append(
 							$("<div/>", {
-								class: "col"
+								class: "row justify-content-between",
 							}).append(
-								$("<span/>").text("暱稱："),
-								$("<span/>", {
-									class: 'name',
-								}).text(response['data']['name']),
+								$("<div/>", {
+									class: "col"
+								}).append(
+									$("<span/>").text("暱稱："),
+									$("<span/>", {
+										class: 'name',
+									}).text(response['data']['name']),
+								),
+								$("<div/>", {
+									class: "col"
+								}).append(
+									$("<span/>", {
+										class: "card-text",
+									}).text("  "),
+									$("<small/>", {
+										class: "text-muted",
+									}).text(response['data']['time']),
+								),
 							),
-							$("<div/>", {
-								class: "col"
+							$("<p/>").append(
+								$("<span/>").text("內容："),
+								$("<span/>", {
+									class: 'content',
+								}).text(response['data']['content']),
+							),
+							$("<div>", {
+								class: 'row justify-content-around',
 							}).append(
-								$("<span/>", {
-									class: "card-text",
-								}).text("  "),
-								$("<small/>", {
-									class: "text-muted",
-								}).text(response['data']['time']),
+								$("<button/>", {
+									type: 'button',
+									'data-id': response['data']['id'],
+									class: 'delete btn btn-danger',
+								}).text("刪除"),
+								$("<button/>", {
+									type: 'button',
+									'data-id': response['data']['id'],
+									class: 'edit btn btn-success',
+								}).text("編輯"),
 							),
 						),
-						$("<p/>").append(
-							$("<span/>").text("內容："),
-							$("<span/>", {
-								class: 'content',
-							}).text(response['data']['content']),
-						),
-						$("<div>", {
-							class: 'row justify-content-around',
-						}).append(
-							$("<button/>", {
-								type: 'button',
-								'data-id': response['data']['id'],
-								class: 'delete btn btn-danger',
-							}).text("刪除"),
-							$("<button/>", {
-								type: 'button',
-								'data-id': response['data']['id'],
-								class: 'edit btn btn-success',
-							}).text("編輯"),
-						),
-					),
-				);
+					);
+				} else {
+					Swal.fire({
+						icon: 'error',
+						title: response['message'],
+					});
+				}
 			}
 		});
-	});
+	}
 
 	$(document).on('click', '.cancel', function() {
 		let id = $(this).attr('data-id');

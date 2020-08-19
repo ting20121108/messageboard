@@ -21,7 +21,9 @@ class App extends BaseConfig
 	| environments.
 	|
 	*/
-	public $baseURL = 'http://localhost/ci4/';
+	// public $baseURL = 'http://localhost/messageboard/public';
+	// public $baseURL = 'http://localhost:8080/';
+	public $baseURL = '`http://messageboard.com/`';
 
 	/*
 	|--------------------------------------------------------------------------

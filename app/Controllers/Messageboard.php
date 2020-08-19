@@ -1,9 +1,6 @@
 <?php namespace App\Controllers;
 
-use App\Models\MessageModel;
-use CodeIgniter\Controller;
-
-class Messageboard extends Controller
+class Messageboard extends BaseController
 {
 
     /**
