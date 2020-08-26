@@ -12,7 +12,7 @@ class Api extends Controller
     {
         $MessageModel = new MessageModel();
         $messages = $MessageModel->findAll();
-        return $this->response->setJSON(json_encode($messages));
+        return $this->response->setJSON($messages);
     }
 
     public function create()
@@ -21,18 +21,10 @@ class Api extends Controller
         $MessageModel = new MessageModel();
         $data = [
             'name' => $this->request->getPost('name'),
-            'content' => $this->request->getPost('content')
+            'content' => $this->request->getPost('content'),
         ];
 
-        if (!$this->validate([
-            'name' => 'required',
-            'content'  => 'required',
-        ])) {
-            return $this->response->setJSON( [
-                'status' => 'failed',
-                'message' => '錯誤！暱稱或內容不可空白',
-            ]);
-        } else {
+        if ($this->validate(['name' => 'required', 'content'  => 'required', ])) {
             $MessageModel->insert($data);
             $id = $MessageModel->insertID();
             if ($id != 0) {
@@ -48,6 +40,11 @@ class Api extends Controller
                     'message' => '新增失敗',
                 ]);
             }
+        } else {
+            return $this->response->setJSON([
+                'status' => 'failed',
+                'message' => '錯誤！暱稱或內容不可空白',
+            ]);
         }
     }
 
@@ -88,15 +85,7 @@ class Api extends Controller
             'content' => $this->request->getPost('content'),
         ];
 
-        if (!$this->validate([
-            'name' => 'required',
-            'content'  => 'required'
-        ])) {
-            return $this->response->setJSON([
-                'status' => 'failed',
-                'message' => '錯誤！暱稱或內容不可空白',
-            ]);
-        } else {
+        if ($this->validate(['name' => 'required', 'content'  => 'required', ])) {
             $MessageModel->update($id, $data);
             $result = $MessageModel->affectedRows();
             if ($result == 1) {
@@ -112,6 +101,11 @@ class Api extends Controller
                     'message' => '修改失敗',
                 ]);
             }
+        } else {
+            return $this->response->setJSON([
+                'status' => 'failed',
+                'message' => '錯誤！暱稱或內容不可空白',
+            ]);
         }
     }
 }

@@ -48,12 +48,12 @@
 		<const name="PUBLICPATH" value="./public/"/>
 
 		<!-- Database configuration -->
-		<env name="database.tests.hostname" value="localhost"/>
+		<!-- <env name="database.tests.hostname" value="localhost"/>
 		<env name="database.tests.database" value="cmrdb"/>
 		<env name="database.tests.username" value="root"/>
 		<env name="database.tests.password" value="tp6vup4cj/6"/>
 		<env name="database.tests.DBDriver" value="MySQLi"/>
-		<env name="database.tests.DBPrefix" value="tests_"/>
+		<env name="database.tests.DBPrefix" value="tests_"/> -->
 		<!-- <env name="database.tests.database" value=":memory:"/>
 		<env name="database.tests.DBDriver" value="SQLite3"/> -->
 	</php>
